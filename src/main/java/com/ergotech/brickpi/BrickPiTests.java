@@ -5,12 +5,8 @@
  * (http://creativecommons.org/licenses/by-sa/3.0/)
  *
  *  This is a library of functions to test the BrickPI.
- *  These should go into the Test Packages, but I'm using this integration:
- *  https://blogs.oracle.com/speakjava/entry/integrating_netbeans_for_raspberry_pi
- *  to copy the dist folder to the pi.  The dist folder does not include the tests
- *  so I'll just put them here for convenience.
- *  
- *  These are simple tests and I'm skipping using JUnit for the same reason as above.
+ *  This is an integration test and should be split out into a separate 
+ *  build configuration.
  */
 package com.ergotech.brickpi;
 

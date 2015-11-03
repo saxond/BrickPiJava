@@ -11,6 +11,18 @@ description = "BrickPi"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
+    dependencies {
+        classpath 'org.hidetake:gradle-ssh-plugin:1.1.4'
+    }
+}
+
+apply plugin: 'org.hidetake.ssh'
+
 // we include the pi4j classes in our jar, so we don't want the pi4j library 
 // specified as a dependency in the generated pom.  Creating this separate 
 // configuration accomplishes that.
@@ -31,11 +43,11 @@ sourceSets {
 }
 
 repositories {        
-     maven { url "http://repo.maven.apache.org/maven2" }
-     mavenLocal()
-     flatDir {
-         dirs 'libs'
-     }
+    mavenLocal()
+    maven { url "http://repo.maven.apache.org/maven2" }     
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
@@ -52,3 +64,22 @@ dependencies {
 jar {
     from configurations.pi4j.collect { it.isDirectory() ? it : zipTree(it) }
 }
+
+remotes {
+  webServer {
+    host = "$System.env.PI_HOST"
+    user = 'pi'
+    password = "$System.env.PI_PASSWORD"
+    // I could not get SSH keys to work - want to give it a try?
+//    identity = file("${System.getProperty('user.home')}/.ssh/id_rsa")
+  }
+}
+
+task deploy << {
+  ssh.run {
+    session(remotes.webServer) {
+      put from: "$jar.archivePath", into: '.'
+    }
+  }
+}
+deploy.mustRunAfter jar
